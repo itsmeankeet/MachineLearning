@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Club Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 15px;
+        }
+
+        .search-container {
+            padding: 25px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #clubDetails {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #clubLogo {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            width: 120px;
+            color: #333;
+        }
+
+        .info-value {
+            flex: 1;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .search-container,
+            #clubDetails {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-container,
+            #clubDetails {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .info-row {
+                flex-direction: column;
+            }
+
+            .info-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" placeholder="Enter the club name" id="clubInput">
+        <button onclick="getData()">Submit</button>
+    </div>
+    
+    <div id="clubDetails">
+        <img id="clubLogo" src="" alt="Club Logo" style="display: none;">
+        <div class="info-row">
+            <span class="info-label">Name:</span>
+            <span class="info-value" id="name"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Home Ground:</span>
+            <span class="info-value" id="homeGround"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Country:</span>
+            <span class="info-value" id="captain"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">City:</span>
+            <span class="info-value" id="coach"></span>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+</body>
+</html>

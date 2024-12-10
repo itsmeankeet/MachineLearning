@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Match Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a2a6c;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1a2a6c;
+        }
+
+        .vs-text {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #b21f1f;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2a3a7c;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .loading::after {
+            content: "⚽";
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 0.5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .vs-text {
+                font-size: 1.2rem;
+            }
+
+            button {
+                font-size: 1rem;
+            }
+        }
+
+        .team-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .form-group {
+            width: 100%;
+        }
+
+        .vs-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #b21f1f;
+            margin: 0.5rem 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Optional: Add some visual separation between sections */
+        .team-selection {
+            border: 2px solid #eee;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 600px) {
+            .vs-text {
+                font-size: 1.5rem;
+                margin: 0.3rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Football Match Predictor</h1>
+        <div class="form-group">
+            <label for="league">Select League</label>
+            <select id="league" required>
+                <option value="">Choose a league...</option>
+                <option value="premier-league">Premier League</option>
+                <option value="la-liga">La Liga</option>
+                <option value="bundesliga">Bundesliga</option>
+                <option value="serie-a">Serie A</option>
+                <option value="ligue-1">Ligue 1</option>
+            </select>
+        </div>
+
+        <div class="team-selection">
+            <div class="form-group">
+                <label for="team1">Home Team</label>
+                <select id="team1" required>
+                    <option value="">Select home team...</option>
+                </select>
+            </div>
+
+            <div class="vs-text">VS</div>
+
+            <div class="form-group">
+                <label for="team2">Away Team</label>
+                <select id="team2" required>
+                    <option value="">Select away team...</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="predictMatch()">Predict Match</button>
+        
+        <div class="loading" id="loading"></div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_KEY = '3cb4eb289a1ad73ca2cff776dcd5a761'; // Replace with your actual API key
+
+        async function fetchTeamLogo(teamName, logoElementId) {
+            try {
+                const response = await fetch(`https://api-football-v1.p.rapidapi.com/v3/teams?name=${encodeURIComponent(teamName)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+                        'X-RapidAPI-Key': API_KEY
+                    }
+                });
+                const data = await response.json();
+                console.log('API Response:', data); // Log the response for debugging
+
+                const logoElement = document.getElementById(logoElementId);
+
+                if (data.response && data.response.length > 0) {
+                    // Filter teams by country or other criteria if needed
+                    const team = data.response.find(t => t.team.country === 'England'); // Example: filter by country
+
+                    if (team && team.team.logo) {
+                        logoElement.src = team.team.logo;
+                        logoElement.style.display = 'block';
+                    } else {
+                        console.warn('No matching team found or logo missing');
+                        logoElement.style.display = 'none';
+                    }
+                } else {
+                    console.warn('No teams found in response');
+                    logoElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching team logo:', error);
+            }
+        }
+
+        function predictMatch() {
+            const league = document.getElementById('league').value;
+            const team1 = document.getElementById('team1').value;
+            const team2 = document.getElementById('team2').value;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+
+            if (!league || !team1 || !team2) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Fetch team logos
+            fetchTeamLogo(team1, 'team1-logo');
+            fetchTeamLogo(team2, 'team2-logo');
+
+            // Show loading animation
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            // Simulate API call with setTimeout
+            setTimeout(() => {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                
+                // Generate random prediction (this should be replaced with actual prediction logic)
+                const randomScore = Math.floor(Math.random() * 4);
+                const randomScore2 = Math.floor(Math.random() * 4);
+                
+                result.innerHTML = `
+                    <h3 style="color: #1a2a6c; margin-bottom: 10px;">Prediction Result</h3>
+                    <p style="font-size: 1.2rem; color: #333;">
+                        ${team1} ${randomScore} - ${randomScore2} ${team2}
+                    </p>
+                `;
+                result.style.backgroundColor = '#f0f0f0';
+            }, 2000);
+        }
+    </script>
+</body>
+</html> 
