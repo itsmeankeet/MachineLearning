@@ -3,6 +3,7 @@ import pandas as pd
 import helper
 
 df = pd.read_csv('pldatas.csv')
+player_performance = pd.read_csv('player_performance.csv')
 
 user_menu = st.sidebar.radio("Select an Option", 
                     (
