@@ -34,3 +34,24 @@ def fetch_medal_tally(df, year, country):
         temp_df = temp_df.groupby('region').sum()[['Gold', 'Silver', 'Bronze']].sort_values('Gold', ascending=False).reset_index()
     temp_df['total'] = temp_df['Gold'] + temp_df['Silver'] + temp_df['Bronze']
     return temp_df
+
+def data_over_time(df, col):
+    nations_over_time = df.drop_duplicates(['Year',col])['Year'].value_counts().reset_index().sort_values('Year')
+    nations_over_time.rename(columns={'Year':'Edition', col:'count'}, inplace=True)
+    return nations_over_time
+
+def most_successful(df, sport):
+    """Returns DataFrame of most successful athletes by medal count for a given sport"""
+    # Filter for valid medals and sport
+    temp_df = df[df['Medal'].notna()]
+    if sport != 'Overall':
+        temp_df = temp_df[temp_df['Sport'] == sport]
+    
+    # Group and count medals
+    medals = temp_df.groupby(['Name', 'region', 'Sport'])['Medal'].count().reset_index()
+    medals = medals.sort_values('Medal', ascending=False)
+    medals.columns = ['Name', 'Region', 'Sport', 'Medals']
+    # Add index column starting from 0
+    medals = medals.reset_index(drop=True)
+    # Return top 10 athletes
+    return medals.head(15)
