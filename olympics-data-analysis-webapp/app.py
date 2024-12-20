@@ -17,9 +17,6 @@ try:
 except FileNotFoundError:
     print("File 'noc_regions.csv' not found. Continuing without it.")
     region_df = None
-
-region_df = pd.read_csv('noc_regions.csv')
-
 df = preprocessor.preprocess(df, region_df)
 
 st.sidebar.title("Olympics Analysis")
