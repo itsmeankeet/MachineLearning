@@ -2,4 +2,3 @@ streamlit
 plotly
 seaborn
 matplotlib
-plotly.express
