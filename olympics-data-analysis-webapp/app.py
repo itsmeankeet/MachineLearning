@@ -7,7 +7,17 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.figure_factory as ff
 
-df = pd.read_csv('athlete_events.csv')
+try:
+    df = pd.read_csv('athlete_events.csv')
+except FileNotFoundError:
+    print("File 'athlete_events.csv' not found. Continuing without it.")
+    df = None  
+try:
+    region_df = pd.read_csv('noc_regions.csv')
+except FileNotFoundError:
+    print("File 'noc_regions.csv' not found. Continuing without it.")
+    region_df = None
+
 region_df = pd.read_csv('noc_regions.csv')
 
 df = preprocessor.preprocess(df, region_df)
